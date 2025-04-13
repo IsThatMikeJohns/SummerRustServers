@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SummerRust Server</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      height: 100%;
+      background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+      overflow-x: hidden;
+      color: white;
+      scroll-behavior: smooth;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      width: 200%;
+      height: 200%;
+      background: repeating-radial-gradient(circle, #ff6f00 1px, transparent 2px);
+      animation: moveBg 40s linear infinite;
+      opacity: 0.02;
+      z-index: 0;
+    }
+
+    @keyframes moveBg {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-50%, -50%); }
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      z-index: 999;
+      border-bottom: 2px solid #ff6f00;
+      box-shadow: 0 0 20px rgba(255, 111, 0, 0.5);
+    }
+
+    .nav-logo {
+      font-size: 1.8rem;
+      color: #ff6f00;
+      text-shadow: 0 0 12px #ff6f00;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .nav-logo:hover {
+      transform: scale(1.1);
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 25px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #ff6f00;
+      border-radius: 15px;
+      padding: 10px 20px;
+      box-shadow: 0 0 15px #ff6f00aa;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    .nav-item {
+      color: #ffffffcc;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 10px 18px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-item::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0%;
+      height: 2px;
+      background: #ff6f00;
+      transition: width 0.3s;
+    }
+
+    .nav-item:hover::after {
+      width: 80%;
+    }
+
+    .nav-item:hover {
+      color: #ff6f00;
+      background: rgba(255, 111, 0, 0.1);
+      box-shadow: 0 0 10px #ff6f00;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      padding-top: 80px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: 5rem;
+      color: #ff6f00;
+      text-shadow: 0 0 30px #ff6f00;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .hero p {
+      font-size: 1.5rem;
+      max-width: 700px;
+      margin: 1rem auto;
+      color: #ffb266;
+    }
+
+    .countdown {
+      margin-top: 1rem;
+      font-size: 2rem;
+      background: #ff6f00;
+      padding: 1rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #ff6f00;
+      color: black;
+    }
+
+    section {
+      padding: 100px 20px;
+      text-align: center;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    #about, #updates, #news {
+      margin-top: 40px;
+      background: rgba(255, 111, 0, 0.05);
+      border-left: 5px solid #ff6f00;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 111, 0, 0.3);
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+
+  <div class="navbar">
+    <div class="nav-logo" onclick="scrollToSection('home')">☀️ SummerRust</div>
+    <div class="nav-menu">
+      <a class="nav-item" onclick="scrollToSection('home')">Home</a>
+      <a class="nav-item" onclick="scrollToSection('updates')">Updates</a>
+      <a class="nav-item" onclick="scrollToSection('news')">News</a>
+      <a class="nav-item" onclick="scrollToSection('about')">About</a>
+      <a class="nav-item" href="https://discord.gg/VDr5nNXEgR" target="_blank">Discord</a>
+    </div>
+  </div>
+
+  <div class="hero" id="home">
+    <h1>🌞 SummerRust</h1>
+    <p>Prepare for an epic Rust experience like no other — optimized gameplay, a custom map, elite mods, and a growing community. Launching soon.</p>
+    <div class="countdown" id="countdown">Loading...</div>
+  </div>
+
+  <section id="updates">
+    <h2>🛠️ Latest Updates & Features</h2>
+    <ul style="text-align: left; font-size: 1.1rem; line-height: 2rem; max-width: 800px; margin: auto;">
+      <li>✔️ Brand-new map coming soon</li>
+      <li>✔️ Powerful Anti-Cheat with active admins</li>
+      <li>✔️ New Kits and Skin Menu being added</li>
+      <li>✔️ MLRS Mod and Events system launching</li>
+      <li>✔️ Discord integration & live announcements</li>
+      <li>✔️ In-game Leaderboards, Raidable Bases, and more!</li>
+    </ul>
+  </section>
+
+  <section id="news">
+    <h2>📰 Developer News</h2>
+    <p>We’re adding unique UI improvements, new custom features, and plan to support mobile web as well. Stay tuned for daily updates as we gear up for launch!</p>
+  </section>
+
+  <section id="about">
+    <h2>About SummerRust</h2>
+    <p>
+      SummerRust is built by dedicated Rust veterans who care about community and competition. We’re bringing fresh mechanics, fast-paced gameplay, and real-time updates that make our server stand out. Whether you’re solo, duo, or zerg, this is the place to fight, build, and thrive.
+    </p>
+  </section>
+
+  <script>
+    const countdownEl = document.getElementById('countdown');
+    const defaultOffset = 120 * 24 * 60 * 60 * 1000;
+    let targetDate = localStorage.getItem('summerRustLaunchDate');
+
+    if (!targetDate) {
+      targetDate = new Date().getTime() + defaultOffset;
+      localStorage.setItem('summerRustLaunchDate', targetDate);
+    }
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((distance / (1000 * 60)) % 60);
+      const seconds = Math.floor((distance / 1000) % 60);
+
+      countdownEl.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    for (let i = 0; i < 100; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2 + 1,
+        dx: Math.random() - 0.5,
+        dy: Math.random() - 0.5,
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff6f00';
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      }
+      requestAnimationFrame(animateParticles);
+    }
+
+    animateParticles();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
